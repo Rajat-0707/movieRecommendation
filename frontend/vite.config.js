@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://movierecommendation-backend-ygbi.onrender.com",
+        target: "https://movierecommendation-okgh.onrender.com",
         changeOrigin: true,
         secure: false,
       },
