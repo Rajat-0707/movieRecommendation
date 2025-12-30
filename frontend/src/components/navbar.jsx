@@ -12,7 +12,7 @@ function Navbar() {
   );
 
   const getStyle = (id) => ({
-    color: st === id ? "black" : "blue",
+    color: st === id ? "blue" : "black",
   });
 
   useEffect(() => {
