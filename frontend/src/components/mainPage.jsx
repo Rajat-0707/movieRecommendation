@@ -13,6 +13,8 @@ function Mainpage() {
     }
   });
 
+  const [loading, setLoading] = useState(false);
+
  
 const handleAddFavourite = async (item) => {
   if (!user) {
@@ -34,7 +36,7 @@ const handleAddFavourite = async (item) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ THIS IS THE FIX
+        Authorization: `Bearer ${token}`, 
       },
       body: JSON.stringify({
         item,
@@ -73,7 +75,7 @@ const handleAddFavourite = async (item) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ REQUIRED
+        Authorization: `Bearer ${token}`, 
       },
       body: JSON.stringify({
         item,
@@ -123,7 +125,6 @@ const handleAddFavourite = async (item) => {
   };
 
 
-  // 🔹 NEW STATES
 const [query, setQuery] = useState(
   () => localStorage.getItem("lastSearchQuery") || ""
 );
@@ -133,7 +134,6 @@ const [query, setQuery] = useState(
 
   useEffect(() => {
     setRecommendations([]);
-    // setQuery("");
   }, [active]);
 
   useEffect(() => {
@@ -187,6 +187,8 @@ const [query, setQuery] = useState(
 
   // 🔹 FETCH RECOMMENDATIONS
   const fetchRecommendations = async (movieName) => {
+    setLoading(true);
+
     if (active !== 1) return;
 
     setShowDropdown(false);
@@ -197,12 +199,17 @@ const [query, setQuery] = useState(
       const res = await fetch(`${API_BASE}/recommend/movie/${encodeURIComponent(name)}`);
       const data = await res.json();
       setRecommendations(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
       console.error(err);
+      setLoading(false);
+      alert("Failed to fetch movie recommendations");
     }
   };
 
   const fetchRecommendationsTVshow = async (showName) => {
+    setLoading(true);
+
     if (active !== 2) return;
 
     setShowDropdown(false);
@@ -221,20 +228,22 @@ const [query, setQuery] = useState(
 
       const data = await res.json();
 
-      // ✅ extract recommendations correctly
       setRecommendations(
         Array.isArray(data.recommendations)
           ? data.recommendations
           : []
       );
-
+      setLoading(false);
     } catch (err) {
       console.error("TV Show Recommendation Error:", err);
+      alert("Failed to fetch TV show recommendations");
       setRecommendations([]);
+      setLoading(false);
     }
   };
 
   const fetchRecommendationsDirector = async (directorName) => {
+    setLoading(true);
     if (active !== 4) return;
 
     setShowDropdown(false);
@@ -245,11 +254,15 @@ const [query, setQuery] = useState(
       const res = await fetch(`${API_BASE}/recommend/director/${encodeURIComponent(dirname)}`);
       const data = await res.json();
       setRecommendations(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
       console.error(err);
+      alert("Failed to fetch director recommendations");
+      setLoading(false);
     }
   };
   const fetchRecommendationsActor = async (actorName) => {
+    setLoading(true);
     if (active !== 3) return;
 
     setShowDropdown(false);
@@ -260,12 +273,17 @@ const [query, setQuery] = useState(
       const res = await fetch(`${API_BASE}/recommend/actor/${encodeURIComponent(actname)}`);
       const data = await res.json();
       setRecommendations(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
+
       console.error(err);
+      alert("Failed to fetch actor recommendations");
+      setLoading(false);
     }
   };
   const fetchRecommendationsGenre = async (genreName) => {
     if (active !== 5) return;
+    setLoading(true);
 
     setShowDropdown(false);
 
@@ -275,8 +293,11 @@ const [query, setQuery] = useState(
       const res = await fetch(`${API_BASE}/recommend/genre/${encodeURIComponent(genname)}`);
       const data = await res.json();
       setRecommendations(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
       console.error(err);
+      alert("Failed to fetch genre recommendations");
+      setLoading(false);
     }
   };
 
@@ -339,7 +360,6 @@ useEffect(() => {
 
   return (
     <>
-      {/* SELECTION BAR */}
       <div className="selectionNavbar">
         <div className="selectionButtons">
           <button
@@ -410,7 +430,6 @@ useEffect(() => {
             // }}
           />
 
-          {/* AUTOCOMPLETE DROPDOWN */}
           {showDropdown && suggestions.length > 0 && (
             <ul className="autocomplete-dropdown">
               {suggestions.map((item, idx) => (
@@ -432,7 +451,13 @@ useEffect(() => {
               ))}
             </ul>
 
-          )}
+          )}:{
+            showDropdown && suggestions.length === 0 && (
+              <ul className="autocomplete-dropdown">
+                <li>No suggestions found</li>
+              </ul>
+            )
+          }
         </div>
 
         <button
@@ -440,12 +465,11 @@ useEffect(() => {
           className="searchButton"
         // disabled={!user}
         >
-          Search
+          {loading ? "Searching..." : "Search"}
         </button>
       </form>
 
 
-      {/* RECOMMENDATIONS */}
       <div className="recommendations">
         {active === 1 && recommendations.length > 0 && (
           <>
@@ -483,7 +507,11 @@ useEffect(() => {
               ))}
             </div>
           </>
-        )}
+        )}:{
+          loading && (
+            <p style={{ textAlign: "center" }}>Loading...<span>⏳</span></p>
+          )
+        }
       </div>
       <div className="tv-results-wrapper">
         {active === 2 && recommendations.length > 0 && (
