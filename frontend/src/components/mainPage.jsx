@@ -142,9 +142,15 @@ const [query, setQuery] = useState(
 
 
   const getStyle = (id) => ({
-    backgroundColor: active === id ? "blue" : "white",
-    color: active === id ? "white" : "black",
-  });
+  backgroundColor: active === id ? "#2563eb" : "#ffffff",
+  color: active === id ? "#ffffff" : "#111827",
+  fontWeight: active === id ? "600" : "500",
+  border: active === id ? "1px solid #2563eb" : "1px solid #d1d5db",
+  transform: active === id ? "translateY(-1px)" : "translateY(0)",
+  boxShadow: active === id ? "0 4px 10px rgba(37, 99, 235, 0.25)" : "none",
+  transition: "all 0.25s ease"
+});
+
 
 
   const searchEndpointMap = {
@@ -421,15 +427,9 @@ useEffect(() => {
             type="text"
             value={query}
             placeholder={`Enter your favourite ${placeholder}`}
-            onChange={(e) => setQuery(e.target.value)}
-            // disabled={!user}
-            // onBlur={(e) => {
-            //   if (!e.currentTarget.contains(e.relatedTarget)) {
-            //     setTimeout(() => setShowDropdown(false), 150);
-            //   }
-            // }}
-          />
-
+            onChange={(e) => setQuery(e.target.value)}  />
+            
+      
           {showDropdown && suggestions.length > 0 && (
             <ul className="autocomplete-dropdown">
               {suggestions.map((item, idx) => (
@@ -451,13 +451,14 @@ useEffect(() => {
               ))}
             </ul>
 
-          )}:{
+          )}
+          {/* :{
             showDropdown && suggestions.length === 0 && (
               <ul className="autocomplete-dropdown">
                 <li>No suggestions found</li>
               </ul>
             )
-          }
+          } */}
         </div>
 
         <button

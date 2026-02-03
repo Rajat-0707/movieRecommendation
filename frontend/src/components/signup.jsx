@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./signup.css"
-import { API_BASE } from "../apiBase";
+import { API_BASE } from "../apiBase"
 
 function Signup() {
   const [name, setName] = useState("")
@@ -9,10 +9,9 @@ function Signup() {
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
 
+  const handleSignup = async (e) => {
+    e.preventDefault()
 
-  const handleSignup = async () => {
-
-    // ADDED CONDITIONS
     if (name.trim().length < 2) {
       alert("Name must be at least 2 characters long")
       return
@@ -27,7 +26,6 @@ function Signup() {
       alert("Password must be at least 6 characters long")
       return
     }
-    // ✅ END OF CHANGES
 
     try {
       const res = await fetch(`${API_BASE}/signup`, {
@@ -52,38 +50,47 @@ function Signup() {
   }
 
   return (
-    <>
-      <div className="parent-container">
-        <div className="container">
+    <div className="parent-container">
+      <form className="container" onSubmit={handleSignup}>
+        <h2>Create Account</h2>
 
+        <div className="inputGroup">
           <input
             type="text"
-            placeholder="Enter your Name"
+            placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+        </div>
 
+        <div className="inputGroup">
           <input
             type="email"
-            placeholder="Enter your Email"
+            placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+        </div>
 
+        <div className="inputGroup">
           <input
             type="password"
-            placeholder="Enter your Password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
-          <button onClick={handleSignup} disabled={!email || !password || !name}>
-            Sign Up
-          </button>
-
         </div>
-      </div>
-    </>
+
+        <button type="submit" disabled={!email || !password || !name}>
+          Sign Up
+        </button>
+
+        <p className="authSwitch">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>Login</span>
+        </p>
+      </form>
+    </div>
   )
 }
 
